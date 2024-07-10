@@ -1,13 +1,13 @@
-// src/App.jsx
-
+import React from 'react';
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import "@fontsource/alegreya"; // Importar la fuente Alegreya
-
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import "@fontsource/alegreya";
 import OrbitingText from "./components/OrbitingText";
 import SceneAudio from "./components/SceneAudio";
-import Background from "./components/Background";
 import NavBar from "./components/pages/navBar/NavBar";
+import Background from "./components/BackgroundShader";
+import MouseLight from "./components/MouseLight";
+import { BrowserRouter } from 'react-router-dom';
 
 const texts = [
   "Somos",
@@ -174,63 +174,49 @@ const texts = [
   "somos pensamientos y miradas,",
   "somos palabras,",
   "Somos humor, amor,",
-  "Somos proyecto",
-  "Somos",
-  "somos sonido,",
-  "somos colores, música,",
-  "somos pensamientos y miradas,",
-  "somos palabras,",
-  "Somos humor, amor,",
-  "Somos proyecto.",
-  "Somos",
-  "Somos forma",
-  "Somos sonido",
-  "somos colores, música,",
-  "somos pensamientos y miradas,",
-  "somos palabras,",
-  "Somos humor, amor,",
-  "Somos proyecto",
+  "Somos proyecto"
 ];
 
 const generateRandomPosition = (radius) => {
   const angle = Math.random() * 2 * Math.PI;
   const distance = radius * Math.random();
   const x = distance * Math.cos(angle);
-  const y = (Math.random() - 0.5) * 20; // Random position within [-10, 10] for y-axis
+  const y = (Math.random() - 0.5) * 20;
   const z = distance * Math.sin(angle);
   return [x, y, z];
 };
 
 function App() {
-  const radius = 400; // Define the radius for text distribution
+  const radius = 400;
   return (
     <>
-     <NavBar/>
+    <BrowserRouter>
+    <NavBar />
       <Canvas
+        shadows
         style={{
           height: "100vh",
-          background: "linear-gradient(180deg, #00FF00 0%, #FFFFFF 100%)",
+          background: "linear-gradient(180deg, #00FF00 0%, #FFFFFF 100%)"
         }}
       >
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} />
-        
-        <SceneAudio />
-        <Background/>
-
+        <PerspectiveCamera makeDefault position={[0, 0, 50]} />
+        <ambientLight intensity={0.2} />
+        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} castShadow />
+        <MouseLight />
+        <Background />
         {texts.map((text, index) => (
           <OrbitingText
             key={index}
             text={text}
             position={generateRandomPosition(radius)}
+            castShadow
+            receiveShadow
           />
         ))}
-        <OrbitControls 
-        enableDamping={true}
-        dampingFactor={0.5}
-         />
+        <OrbitControls enableDamping={true} dampingFactor={0.5} />
       </Canvas>
+    </BrowserRouter>
+  
     </>
   );
 }
